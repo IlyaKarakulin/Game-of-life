@@ -21,15 +21,15 @@ public:
     Field_calculation(int argc, char **argv);
     ~Field_calculation();
     void calc_iter(auto &map_field);
-    void check_del(auto &map_field, list<pair<int, int>> &cell_on_del, list<pair<int, int>> &cell_on_check_birth);
-    void check_birth(auto &map_field, list<pair<int, int>> &cell_on_check_birth);
-    void check_neubors(auto &map_field, list<pair<int, int>> &cell_on_check_birth, pair<int, int> cell);
+    void check_del(auto &map_field, forward_list<pair<int, int>> &cell_on_del, auto &cell_on_check_birth);
+    void check_birth(auto &map_field, auto &cell_on_check_birth, forward_list<pair<int, int>> &cell_on_birth);
+    void check_neubors(auto &map_field, auto &cell_on_check_birth, pair<int, int> cell);
     unordered_map<pair<int, int>, int, pair_hash> map_field; //!!!!!!!
 
 private:
     int size;
     string game_name;
-    set<int> survival_condition;
-    set<int> birth_condition;
+    set<int> set_survival_condition;
+    set<int> set_birth_condition;
     vector<vector<bool>> field;
 };

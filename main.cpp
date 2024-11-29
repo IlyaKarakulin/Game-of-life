@@ -4,7 +4,7 @@
 #include <cctype>
 #include <unordered_map>
 #include <tuple>
-#include <list>
+#include <forward_list>
 #include <array>
 #include "fild_calc.hpp"
 #include "parser.hpp"
@@ -40,7 +40,7 @@ string Parse_input_data::get_input_file()
     return this->in_file;
 }
 
-void Parse_input_data::parse_head(string &name, int &size, set<int> &birth_condition, set<int> &survival_condition)
+void Parse_input_data::parse_head(string &name, int &size, set<int> &set_birth_condition, set<int> &set_survival_condition)
 {
     fin.open(get_input_file());
 
@@ -60,7 +60,7 @@ void Parse_input_data::parse_head(string &name, int &size, set<int> &birth_condi
 
     while (isdigit(tmp[i]))
     {
-        birth_condition.insert(tmp[i] - '0');
+        set_birth_condition.insert(tmp[i] - '0');
         ++i;
     }
 
@@ -68,7 +68,7 @@ void Parse_input_data::parse_head(string &name, int &size, set<int> &birth_condi
 
     while (isdigit(tmp[i]))
     {
-        survival_condition.insert(tmp[i] - '0');
+        set_survival_condition.insert(tmp[i] - '0');
         ++i;
     }
 }
@@ -93,18 +93,18 @@ void Parse_input_data::parse_field(auto &map_field)
 Field_calculation::Field_calculation(int argc, char **argv)
 {
     Parse_input_data parser(argc, argv);
-    parser.parse_head(this->game_name, this->size, this->birth_condition, this->survival_condition);
+    parser.parse_head(this->game_name, this->size, this->set_birth_condition, this->set_survival_condition);
 
-    cout << this->game_name << endl
-         << this->size << endl;
+    // cout << this->game_name << endl
+    //      << this->size << endl;
 
-    for (int x : birth_condition)
-        cout << x << ' ';
-    cout << endl;
-    for (int x : survival_condition)
-        cout << x << ' ';
-    cout << endl
-         << "--------" << endl;
+    // for (int x : set_birth_condition)
+    //     cout << x << ' ';
+    // cout << endl;
+    // for (int x : set_survival_condition)
+    //     cout << x << ' ';
+    // cout << endl
+    //      << "--------" << endl;
 
     // this->field.reserve(size); //?????
     // for (vector<bool> &x : this->field)
@@ -112,19 +112,19 @@ Field_calculation::Field_calculation(int argc, char **argv)
 
     parser.parse_field(this->map_field);
 
-    for (const auto &[key, value] : this->map_field)
-    {
-        cout << "(" << key.first << ' ' << key.second << ")" << " - " << value << endl;
-    }
+    // for (const auto &[key, value] : this->map_field)
+    // {
+    //     cout << "(" << key.first << ' ' << key.second << ")" << " - " << value << endl;
+    // }
 
-    cout << "---\n";
+    // cout << "---\n";
 }
 
 Field_calculation::~Field_calculation()
 {
 }
 
-void Field_calculation::check_neubors(auto &map_field, list<pair<int, int>> &cell_on_check_birth, pair<int, int> cell)
+void Field_calculation::check_neubors(auto &map_field, auto &cell_on_check_birth, pair<int, int> cell)
 {
     pair<int, int> tmp_cell;
 
@@ -137,41 +137,50 @@ void Field_calculation::check_neubors(auto &map_field, list<pair<int, int>> &cel
             tmp_cell.second = cell.second + j;
 
             if (map_field.count(tmp_cell))
-            {
                 ++map_field[cell];
-            }
             else
-            {
-                cell_on_check_birth.push_back(tmp_cell); // TODO replace to un_map
-                // ++map_field[tmp_cell];
-            }
+                ++cell_on_check_birth[tmp_cell];
         }
     }
 }
 
-void Field_calculation::check_del(auto &map_field, list<pair<int, int>> &cell_on_del, list<pair<int, int>> &cell_on_check_birth)
+void Field_calculation::check_del(auto &map_field, forward_list<pair<int, int>> &cell_on_del, auto &cell_on_check_birth)
 {
-    for (const auto &[cell, count] : map_field)
+    for (const auto &[cell, count_n] : map_field)
     {
         check_neubors(map_field, cell_on_check_birth, cell);
 
-        cout << "(" << cell.first << " " << cell.second << ")" << " - " << count << endl;
+        if (!(this->set_survival_condition.count(count_n)))
+            cell_on_del.push_front(cell);
     }
-
-    // for(auto )
 }
 
-void Field_calculation::check_birth(auto &map_field, list<pair<int, int>> &cell_on_check_birth)
+void Field_calculation::check_birth(auto &map_field, auto &cell_on_check_birth, forward_list<pair<int, int>> &cell_on_birth)
 {
+    for (const auto &[cell, count_n] : cell_on_check_birth)
+    {
+        if (this->set_birth_condition.count(count_n))
+            cell_on_birth.push_front(cell);
+    }
 }
 
 void Field_calculation::calc_iter(auto &map_field)
 {
-    list<pair<int, int>> cell_on_del;
-    list<pair<int, int>> cell_on_check_birth;
+    forward_list<pair<int, int>> cell_on_del;
+    forward_list<pair<int, int>> cell_on_birth;
+
+    unordered_map<pair<int, int>, int, pair_hash> cell_on_check_birth;
 
     check_del(map_field, cell_on_del, cell_on_check_birth);
-    // check_birth(map_field, cell_on_del, cell_on_check_birth);
+    check_birth(map_field, cell_on_check_birth, cell_on_birth);
+
+    cout << "To del:\n";
+    for (const auto &cell : cell_on_del)
+        cout << "(" << cell.first << " " << cell.second << ")" << endl;
+
+    cout << "Mb birth\n";
+    for (const auto &cell : cell_on_birth)
+        cout << "(" << cell.first << " " << cell.second << ")" << endl;
 }
 
 int main(int argc, char **argv)
