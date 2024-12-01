@@ -33,15 +33,16 @@ forward_list<pair<int, int>> Field_calculation::get_cells()
 void Field_calculation::check_neubors(auto &map_field, auto &cell_on_check_birth, pair<int, int> cell)
 {
     pair<int, int> tmp_cell;
+    const int size = this->get_size();
 
     // traversing the neighbors of one cell in a circle
     for (int i = -1; i <= 1; ++i)
     {
-        tmp_cell.first = cell.first + i;
+        tmp_cell.first = (((cell.first + i) % size) + size) % size; // culc in curcle ((a + b) % b + b) % b
 
         for (int j = -1; j <= 1; j += (2 - (i && 1))) // (2 - (i && 1)) for skipping the center cell
         {
-            tmp_cell.second = cell.second + j;
+            tmp_cell.second = (((cell.second + j) % size) + size) % size;
 
             // if such a cell exists, then the cell has found a new neighbor,
             //  if not, then the tmpcell has found a new neighbor
@@ -88,6 +89,14 @@ void Field_calculation::calc_iter()
 
     // Identify cells to be born
     check_birth(this->map_field, cell_on_check_birth, cell_on_birth);
+
+    //     cout << "To del:\n";
+    // for (const auto &cell : cell_on_del)
+    //     cout << "(" << cell.first << " " << cell.second << ")" << endl;
+
+    // cout << "Mb birth\n";
+    // for (const auto &[cell, n] : cell_on_check_birth)
+    //     cout << "(" << cell.first << " " << cell.second << ") - " << n << endl;
 
     // Remove cells marked for deletion from the map
     for (const auto &cell : cell_on_del)
