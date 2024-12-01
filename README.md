@@ -17,3 +17,21 @@ This is a C++ implementation of Conway's **Game of Life**. The game simulates ce
    ```bash
    git clone https://github.com/IlyaKarakulin/Game-of-life.git
    cd game-of-life
+
+2. building a project:
+   ```bash
+   cmake -B ./build -S ./
+   cmake --build ./build
+
+3. launch examples
+   ```bash 
+   ./build/game
+   ```bash
+   ./build/game ./game1.live
+   ```bash
+   ./build/game ./game1.live --iterations=3 --output=out.live
+      ```bash
+   ./build/game ./game1.live -i 3 -o out.live
+         ```bash
+   ./build/game ./game1.live -o out.live --iterations=3 
+
