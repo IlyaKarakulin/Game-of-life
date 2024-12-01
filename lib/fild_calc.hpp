@@ -1,6 +1,16 @@
 #include <set>
 #include <vector>
 #include <unordered_map>
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <cctype>
+#include <unordered_map>
+#include <tuple>
+#include <forward_list>
+#include <array>
+#include <cstdlib>
+#include <string>
 
 using namespace std;
 
@@ -59,7 +69,7 @@ public:
     Parse_input_data(Meta_data &m_data, int argc, char **argv);
     ~Parse_input_data();
     void parse_head(Meta_data &m_data, string &name, int &size, set<int> &life_condition, set<int> &birth_condition);
-    void parse_field(auto &map_field);
+    void parse_field(unordered_map<pair<int, int>, int, pair_hash> &map_field);
     int get_size();
     string get_input_file();
     void normalize_command(string &command);
@@ -109,6 +119,6 @@ public:
     Game_process();
     ~Game_process();
     void start_game(int argc, char **argv);
-    bool mode0_1(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser, string command, string output_file_name);
-    bool mode2(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser);
+    bool mode0_1(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser, string command);
+    void mode2(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser);
 };

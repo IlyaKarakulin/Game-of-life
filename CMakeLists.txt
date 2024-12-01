@@ -4,11 +4,15 @@ project(Game-of-live VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(game main.cpp)
 
 # enable_testing()
-# add_subdirectory(lib)
+add_subdirectory(lib)
 
-# target_include_directories(BitArrayLib PUBLIC .) # PRIVATE
+target_include_directories(game_of_live PUBLIC .) # PRIVATE
+
+add_executable(game main.cpp)
+
+target_link_libraries(game game_of_live) # PRIVATE
 
 # add_subdirectory(tests)
+
