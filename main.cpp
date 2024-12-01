@@ -7,7 +7,6 @@
 #include <forward_list>
 #include <array>
 #include <cstdlib>
-// #include <boost/algorithm/string.hpp>
 #include <string>
 #include "fild_calc.hpp"
 
@@ -46,6 +45,16 @@ void Meta_data::set_game_mode(int mode)
     this->game_mode = mode;
 }
 
+void Meta_data::set_out_file_name(string out_file_name)
+{
+    this->out_file_name = out_file_name;
+}
+
+void Meta_data::set_count_iter(int iter)
+{
+    this->count_iter = iter;
+}
+
 int Meta_data::get_game_mode()
 {
     return this->game_mode;
@@ -71,24 +80,84 @@ string Meta_data::get_conditions()
     return this->conditions;
 }
 
-Parse_input_data::Parse_input_data(Meta_data &m_data, int args, char **argv)
+string Meta_data::get_out_file_name()
 {
-    this->arg_count = args;
-    this->arg_arr = argv;
+    return this->out_file_name;
+}
 
-    if (args == 1)
+int Meta_data::get_count_iter()
+{
+    return this->count_iter;
+}
+
+Parse_input_data::Parse_input_data(Meta_data &m_data, int argc, char **argv)
+{
+    this->args.assign(argv, argv + argc);
+
+    if (args.size() == 1)
     {
         this->in_file = "./default_field.live";
         m_data.set_game_mode(0);
     }
     else
     {
-        this->in_file = this->arg_arr[1];
-        if (args == 2)
+        this->in_file = this->args.at(1);
+        if (argc == 2)
             m_data.set_game_mode(1);
         else
             m_data.set_game_mode(2);
     }
+}
+
+bool Parse_input_data::parse_args_iter(Meta_data &m_data)
+{
+    int ind_iter = 0, count_iter = 0;
+
+    while ((ind_iter < this->args.size()) && !((this->args.at(ind_iter) == "-i") || (this->args.at(ind_iter).starts_with("--iterations="))))
+        ++ind_iter;
+
+    if (this->args.at(ind_iter) == "-i")
+    {
+        count_iter = stoi(this->args.at(ind_iter + 1));
+    }
+    else if (this->args.at(ind_iter).starts_with("--iterations=") && (this->args.at(ind_iter).length() > 13))
+    {
+        count_iter = stoi(this->args.at(ind_iter).substr(13));
+    }
+    else
+    {
+        cerr << "Error! incorrect input of the number of iterations" << endl;
+        return true;
+    }
+
+    m_data.set_count_iter(count_iter);
+    return false;
+}
+
+bool Parse_input_data::parse_args_outfile(Meta_data &m_data)
+{
+    int ind_iter = 0;
+    string out_file;
+
+    while ((ind_iter < this->args.size()) && !((this->args.at(ind_iter) == "-o") || (this->args.at(ind_iter).starts_with("--output="))))
+        ++ind_iter;
+
+    if (this->args.at(ind_iter) == "-i")
+    {
+        out_file = this->args.at(ind_iter + 1);
+    }
+    else if (this->args.at(ind_iter).starts_with("--output=") && (this->args.at(ind_iter).length() > 13))
+    {
+        out_file = this->args.at(ind_iter).substr(9);
+    }
+    else
+    {
+        cerr << "Error! incorrect input of the output file" << endl;
+        return true;
+    }
+
+    m_data.set_out_file_name(out_file);
+    return false;
 }
 
 Parse_input_data::~Parse_input_data()
@@ -352,8 +421,12 @@ Game_process::~Game_process()
 {
 }
 
-bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_data &m_data, string command, string output_file_name)
+bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser, string command, string output_file_name)
 {
+    printer.print(game);
+    getline(cin, command);
+    parser.normalize_command(command);
+
     static int count_str_to_del = 0;
     int count_tick = 1;
     bool flag = true;
@@ -423,6 +496,24 @@ bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_d
     return flag;
 }
 
+bool Game_process::mode2(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser)
+{
+    bool flag = parser.parse_args_iter(m_data);
+    flag = flag && parser.parse_args_outfile(m_data);
+
+    if (flag)
+        exit(1);
+
+    for (int i = 0; i < m_data.get_count_iter(); ++i)
+        game.calc_iter();
+
+    string file = m_data.get_out_file_name();
+    printer.save(game, m_data, file);
+    printer.print(game);
+
+    return false;
+}
+
 void Game_process::start_game(int argc, char **argv)
 {
     Meta_data m_data;
@@ -434,15 +525,15 @@ void Game_process::start_game(int argc, char **argv)
     int count_tick = 1;
     bool flag = true;
 
-    printer.print(game);
-
     while (flag)
     {
         if (m_data.get_game_mode() != 2)
         {
-            getline(cin, command);
-            parser.normalize_command(command);
-            flag = mode0_1(game, printer, m_data, command, output_file_name);
+            flag = mode0_1(game, printer, m_data, parser, command, output_file_name);
+        }
+        else
+        {
+            flag = mode2(game, printer, m_data, parser);
         }
     }
 }
@@ -451,6 +542,5 @@ int main(int argc, char **argv)
 {
     Game_process game;
     game.start_game(argc, argv);
-
     return 0;
 }
