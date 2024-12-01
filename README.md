@@ -26,12 +26,16 @@ This is a C++ implementation of Conway's **Game of Life**. The game simulates ce
 3. launch examples
    ```bash 
    ./build/game
+
    ```bash
    ./build/game ./game1.live
+
    ```bash
    ./build/game ./game1.live --iterations=3 --output=out.live
-      ```bash
+
+   ```bash
    ./build/game ./game1.live -i 3 -o out.live
-         ```bash
+   
+   ```bash
    ./build/game ./game1.live -o out.live --iterations=3 
 
