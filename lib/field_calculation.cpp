@@ -3,26 +3,7 @@
 Field_calculation::Field_calculation(Meta_data &m_data, Parse_input_data &parser, int argc, char **argv)
 {
     parser.parse_head(m_data, this->game_name, this->size, this->set_birth_condition, this->set_survival_condition);
-
-    // cout << this->game_name << endl
-    //      << this->size << endl;
-
-    // for (int x : set_birth_condition)
-    //     cout << x << ' ';
-    // cout << endl;
-    // for (int x : set_survival_condition)
-    //     cout << x << ' ';
-    // cout << endl
-    //      << "--------" << endl;
-
     parser.parse_field(this->map_field);
-
-    // for (const auto &[key, value] : this->map_field)
-    // {
-    //     cout << "(" << key.first << ' ' << key.second << ")" << " - " << value << endl;
-    // }
-
-    // cout << "---\n";
 }
 
 Field_calculation::~Field_calculation()
@@ -102,15 +83,4 @@ void Field_calculation::calc_iter()
 
     for (const auto &cell : cell_on_birth)
         this->map_field[cell] = 0;
-
-    // cout << "To del:\n";
-    // for (const auto &cell : cell_on_del)
-    //     cout << "(" << cell.first << " " << cell.second << ")" << endl;
-
-    // cout << "Mb birth\n";
-    // for (const auto &cell : cell_on_birth)
-    //     cout << "(" << cell.first << " " << cell.second << ")" << endl;
-
-    //* for (const auto &[key, value] : this->map_field)
-    //*     cout << "(" << key.first << ' ' << key.second << ")" << " - " << value << endl;
 }

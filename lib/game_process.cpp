@@ -64,7 +64,6 @@ bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_d
 
         cout << endl
              << "press ENTER to continue...";
-        // cin.ignore();
         cin.get();
         printer.clear(14);
     }
