@@ -35,7 +35,7 @@ void Meta_data::set_size(string size)
     this->size = size;
 }
 
-void Meta_data::set_conditions(string conditional)
+void Meta_data::set_conditions(string conditions)
 {
     this->conditions = conditions;
 }
@@ -113,10 +113,10 @@ bool Parse_input_data::parse_args_iter(Meta_data &m_data)
 {
     int ind_iter = 0, count_iter = 0;
 
-    while ((ind_iter < this->args.size()) && !((this->args.at(ind_iter) == "-i") || (this->args.at(ind_iter).starts_with("--iterations="))))
+    while ((ind_iter < (this->args.size() - 1)) && !((this->args.at(ind_iter) == "-i") || (this->args.at(ind_iter).starts_with("--iterations="))))
         ++ind_iter;
 
-    if (this->args.at(ind_iter) == "-i")
+    if (this->args.at(ind_iter) == "-i" && (ind_iter < (this->args.size() - 1)))
     {
         count_iter = stoi(this->args.at(ind_iter + 1));
     }
@@ -139,14 +139,14 @@ bool Parse_input_data::parse_args_outfile(Meta_data &m_data)
     int ind_iter = 0;
     string out_file;
 
-    while ((ind_iter < this->args.size()) && !((this->args.at(ind_iter) == "-o") || (this->args.at(ind_iter).starts_with("--output="))))
+    while ((ind_iter < (this->args.size() - 1)) && !((this->args.at(ind_iter) == "-o") || (this->args.at(ind_iter).starts_with("--output="))))
         ++ind_iter;
 
-    if (this->args.at(ind_iter) == "-i")
+    if (this->args.at(ind_iter) == "-o" && (ind_iter < (this->args.size() - 1)))
     {
         out_file = this->args.at(ind_iter + 1);
     }
-    else if (this->args.at(ind_iter).starts_with("--output=") && (this->args.at(ind_iter).length() > 13))
+    else if (this->args.at(ind_iter).starts_with("--output=") && this->args.at(ind_iter).ends_with(".live") && (this->args.at(ind_iter).length() > 14))
     {
         out_file = this->args.at(ind_iter).substr(9);
     }
@@ -174,7 +174,14 @@ void Parse_input_data::parse_head(Meta_data &m_data, string &name, int &size, se
     fin.open(get_input_file());
 
     string version;
-    getline(fin, version); // TODO add processing exeptions. if version isn't 1.06
+    getline(fin, version);
+
+    if (version != "#live 1.06")
+    {
+        cerr << "the version does not match 1.06" << endl;
+        exit(1);
+    }
+
     m_data.set_version(version);
 
     getline(fin, name);
@@ -188,6 +195,7 @@ void Parse_input_data::parse_head(Meta_data &m_data, string &name, int &size, se
 
     getline(fin, tmp);
     m_data.set_conditions(tmp);
+    cout << m_data.get_conditions() << endl;
     tmp = tmp.substr(4);
     int i = 0;
 
@@ -401,7 +409,8 @@ void Print_field::clear(int lines)
 void Print_field::print_help()
 {
     cout << "You can specify the name of the output file and the number of steps at startup:" << endl;
-    cout << "./game <name input file> -i <count step> -o <name out file>" << endl
+    cout << "./game <name input file> -i <count step> -o <name out file>" << endl;
+    cout << "For example: ./build/game game1.live --iterations=2 --output=./out3.live" << endl
          << endl;
     cout << "Or play step by step. At startup, you can transfer a file that" << endl;
     cout << "describes the field in the live 1.06 format." << endl;
@@ -499,15 +508,16 @@ bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_d
 bool Game_process::mode2(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser)
 {
     bool flag = parser.parse_args_iter(m_data);
-    flag = flag && parser.parse_args_outfile(m_data);
+    bool flag2 = parser.parse_args_outfile(m_data);
 
-    if (flag)
+    if (flag || flag2)
         exit(1);
 
     for (int i = 0; i < m_data.get_count_iter(); ++i)
         game.calc_iter();
 
     string file = m_data.get_out_file_name();
+    cout << file << endl;
     printer.save(game, m_data, file);
     printer.print(game);
 
