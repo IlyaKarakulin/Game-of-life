@@ -67,8 +67,6 @@ bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_d
 
         printer.print_help(); // Print help information
 
-        cout << endl
-             << "press ENTER to continue...";
         cin.get();         // Wait for user input
         printer.clear(14); // Clear help information
     }
@@ -109,12 +107,12 @@ void Game_process::mode2(Field_calculation &game, Print_field &printer, Meta_dat
 }
 
 // Starts the game and selects the appropriate game mode
-void Game_process::start_game(int argc, char **argv)
+void Game_process::start_game(int argc, char **argv, bool is_print)
 {
     Meta_data m_data;                                   // Stores metadata about the game
     Parse_input_data parser(m_data, argc, argv);        // Parses command-line arguments
     Field_calculation game(m_data, parser, argc, argv); // Initializes the game state
-    Print_field printer(game);                          // Handles printing and saving the game field
+    Print_field printer(game, is_print);                // Handles printing and saving the game field
     string command;                                     // Stores user commands
     int count_tick = 1;                                 // Default number of iterations
     bool flag = true;                                   // Controls the game loop

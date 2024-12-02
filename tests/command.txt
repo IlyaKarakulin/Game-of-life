@@ -1,0 +1,3 @@
+tick 200
+dump out_def_file_tick_200.live
+exit

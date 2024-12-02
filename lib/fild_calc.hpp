@@ -132,7 +132,8 @@ private:
 class Print_field
 {
 private:
-    int size;                          // Size of the game field
+    int size; // Size of the game field
+    bool is_print;
     vector<vector<bool>> matrix_field; // Matrix for storing the game field representation
 
 public:
@@ -149,7 +150,7 @@ public:
     void print_help();
 
     // Constructor to initialize the print field with the given game field size
-    Print_field(Field_calculation &map_field);
+    Print_field(Field_calculation &map_field, bool is_print);
 
     ~Print_field();
 };
@@ -162,7 +163,7 @@ public:
     ~Game_process();
 
     // Start the game, choose the appropriate mode, and process commands
-    void start_game(int argc, char **argv);
+    void start_game(int argc, char **argv, bool is_pring);
 
     // Handle commands for modes 0 and 1 (interactive mode with default or custom feild)
     bool mode0_1(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser, string command);

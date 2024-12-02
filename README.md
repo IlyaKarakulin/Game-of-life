@@ -47,5 +47,11 @@ This is a C++ implementation of Conway's **Game of Life**. The game simulates ce
    ```
 
    ```bash
-   ./build/game ./game1.live -o out.live --iterations=3 
+   ./build/game ./game1.live -o out.live --iterations=3
+   ```
+
+4. Testing
+   It is tested using Google tests, they are downloaded automatically during assembly
+   ```bash 
+   ./build/tests/live_test
    ```
