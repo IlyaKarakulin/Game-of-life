@@ -19,13 +19,13 @@ This is a C++ implementation of Conway's **Game of Life**. The game simulates ce
    cd game-of-life
    ```
 
-2. building a project:
+2. Building a project:
    ```bash
    cmake -B ./build -S ./
    cmake --build ./build
    ```
 
-3. launch examples
+3. Launch examples
    ```bash 
    ./build/game
    ```
