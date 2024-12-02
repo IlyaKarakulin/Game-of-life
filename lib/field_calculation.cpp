@@ -90,14 +90,6 @@ void Field_calculation::calc_iter()
     // Identify cells to be born
     check_birth(this->map_field, cell_on_check_birth, cell_on_birth);
 
-    //     cout << "To del:\n";
-    // for (const auto &cell : cell_on_del)
-    //     cout << "(" << cell.first << " " << cell.second << ")" << endl;
-
-    // cout << "Mb birth\n";
-    // for (const auto &[cell, n] : cell_on_check_birth)
-    //     cout << "(" << cell.first << " " << cell.second << ") - " << n << endl;
-
     // Remove cells marked for deletion from the map
     for (const auto &cell : cell_on_del)
         this->map_field.erase(cell);

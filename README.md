@@ -32,6 +32,10 @@ This is a C++ implementation of Conway's **Game of Life**. The game simulates ce
 
    ```bash
    ./build/game ./game1.live
+   tick
+   tick 5
+   dump ./out.live
+   exit
    ```
 
    ```bash
@@ -45,4 +49,3 @@ This is a C++ implementation of Conway's **Game of Life**. The game simulates ce
    ```bash
    ./build/game ./game1.live -o out.live --iterations=3 
    ```
-
