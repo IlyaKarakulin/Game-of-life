@@ -168,6 +168,6 @@ public:
     // Handle commands for modes 0 and 1 (interactive mode with default or custom feild)
     bool mode0_1(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser, string command);
 
-    // Handle automatic mode
+    // automatic mode
     void mode2(Field_calculation &game, Print_field &printer, Meta_data &m_data, Parse_input_data &parser);
 };

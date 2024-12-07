@@ -51,6 +51,19 @@ bool Game_process::mode0_1(Field_calculation &game, Print_field &printer, Meta_d
 
         printer.print(game); // Print the updated game state
     }
+    else if (command.length() == 0)
+    {
+        printer.clear(game.get_size() + 2 + count_str_to_del);
+        count_str_to_del = 0;
+
+        if (command.length() > 5) // additionally, the number of iterations has been introduced
+            count_tick = stoi(command.substr(5));
+
+        for (int i = 0; i < count_tick; ++i)
+            game.calc_iter();
+
+        printer.print(game); // Print the updated game state
+    }
     // Handle "exit" command (exit the game loop)
     else if (command == "exit")
     {
@@ -119,7 +132,6 @@ void Game_process::start_game(int argc, char **argv, bool is_print)
 
     // Print the initial state of the game
     printer.print(game);
-    parser.normalize_command(command);
 
     // Interactive or static mode
     if (m_data.get_game_mode() != 2)
@@ -128,6 +140,7 @@ void Game_process::start_game(int argc, char **argv, bool is_print)
         {
             // Get user command and process it
             getline(cin, command);
+            parser.normalize_command(command);
             flag = mode0_1(game, printer, m_data, parser, command);
         }
     }

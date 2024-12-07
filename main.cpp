@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     Game_process game;
     game.start_game(argc, argv, true);
-    return 0;
 
+    // кнопка для шага, стандартные поля
     return 0;
 }
